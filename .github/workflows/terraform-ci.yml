@@ -11,6 +11,12 @@ jobs:
     - name: コードをチェックアウト
       uses: actions/checkout@v2
 
+    - name: GCP認証の設定
+      run: echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcloud-key.json
+
+    - name: gcloudの設定
+      run: gcloud auth activate-service-account --key-file $HOME/gcloud-key.json
+
     - name: Terraformをセットアップ
       uses: hashicorp/setup-terraform@v2
       with:
