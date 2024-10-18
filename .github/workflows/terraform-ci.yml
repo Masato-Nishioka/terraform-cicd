@@ -1,0 +1,33 @@
+name: Terraform CI
+
+on:
+  push:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: コードをチェックアウト
+      uses: actions/checkout@v2
+
+    - name: Terraformをセットアップ
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+
+    - name: tflintのセットアップ
+      run: |
+        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+    - name: Terraformの初期化
+      run: terraform init
+
+    - name: Terraformのフォーマットチェック
+      run: terraform fmt -check
+
+    - name: tflintの実行
+      run: tflint
+
+    - name: Terraform Planの実行
+      run: terraform plan
