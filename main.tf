@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 1.0.0"
+  required_version = ">= 1.9.8"
 
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 3.5"  # 必要に応じてバージョンを調整
+      version = "~> 3.5" # 必要に応じてバージョンを調整
     }
   }
 }
