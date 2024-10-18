@@ -3,16 +3,6 @@
 このリポジトリは、GitHub Actionsを使用してTerraformの開発環境のCI/CDを構築することを目的としています。</br>
 構築までの手順や参考となりそうな記事など、個人用のメモとして様々な情報を残しています。
 
-## 目次
-
-- [VSCodeとGitHubの連携（SSH）](#vscodeとgithubの連携ssh)
-- [Terraformのインストール](#terraformのインストール)
-- [Google Cloud アカウントの作成](#google-cloud-アカウントの作成)
-- [gcloud CLIのインストール](#gcloud-cliのインストール)
-- [gcloud CLIの認証](#gcloud-cliの認証)
-- [GitHub Actionsの制限について](#github-actionsの制限について)
-- [Terraformのプラン実行方法](#terraformのプラン実行方法)
-- [参考](#参考)
 
 ## VSCodeとGitHubの連携（SSH）
 
@@ -45,12 +35,22 @@ gcloud CLIは以下のリンクからインストールできます。
 gcloud auth login
 ```
 
+## GCP サービスアカウント作成（ロールはオーナー）
+- [サービス アカウントを作成する | IAM Documentation](https://cloud.google.com/iam/docs/service-accounts-create?hl=ja)
+
+
+## サービス アカウント キーを作成
+- [サービス アカウント キーの作成と管理](https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=ja)
+
+## GithubのSecretsにJSONを登録
+- [GitHub Actions でのシークレットの使用](https://docs.github.com/ja/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+
 ## 参考
 
-- GitHub Actionsは無料枠では2000分/月しか使えない。  
+- GitHub Actionsは無料枠では2000分/月しか使えない。
   [Qiita記事](https://qiita.com/technote-space/items/7b2694786f577c823fc1)
 
 - `env/stg/` 配下にある複数のフォルダ内にあるファイルに対して、どのようにして `terraform plan` をしたのか。丸本さんに聞く。
 
-- めっちゃ参考になりそうな公式サイト:  
+- めっちゃ参考になりそうな公式サイト:
   [Terraformのベストプラクティス](https://cloud.google.com/docs/terraform/best-practices-for-terraform?hl=ja)
