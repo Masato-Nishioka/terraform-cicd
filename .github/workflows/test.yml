@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write  # IDトークンの発行を許可
+  contents: read   # リポジトリコンテンツへの読み取り権限
+
 jobs:
   upload-to-gcs:
     runs-on: ubuntu-latest
@@ -31,34 +35,3 @@ jobs:
     - name: Upload file to GCS
       run: |
         gsutil cp testfile.txt gs://your-bucket-name/
-
-
-
-
-# name: test
-# on:
-#   workflow_dispatch:
-#   push:
-#     branches:
-#       - main
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       id-token: write
-#       contents: read
-#     steps:
-#       - name: checkout
-#         uses: actions/checkout@v3
-#       - id: 'auth'
-#         name: 'Authenticate to Google Cloud'
-#         uses: 'google-github-actions/auth@v1'
-#         with:
-#           workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
-#           service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
-#       - name: 'Set up Cloud SDK'
-#         uses: 'google-github-actions/setup-gcloud@v1'
-#         with:
-#           version: '>= 379.0.0'
-#       - name: 'Upload test file'
-#         run: 'echo "test" > test.txt && gsutil cp test.txt gs://terraform-test-masato-nishioka'
