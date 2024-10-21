@@ -32,6 +32,6 @@ jobs:
       run: |
         echo "This is a test file" > testfile.txt
 
-    - name: Upload file to GCS
+    - name: Upload file to GCSお願いします。
       run: |
         gsutil cp testfile.txt gs://terraform-test-masato-nishioka/
