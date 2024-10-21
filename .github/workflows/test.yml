@@ -1,27 +1,63 @@
-name: test
+name: Upload text file to GCS
+
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+
 jobs:
-  deploy:
+  upload-to-gcs:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
-          service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-        with:
-          version: '>= 379.0.0'
-      - name: 'Upload test file'
-        run: 'echo "test" > test.txt && gsutil cp test.txt gs://terraform-test-masato-nishioka'
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+    - name: Authenticate to Google Cloud
+      run: |
+        gcloud auth login --brief
+
+    - name: Create a text file
+      run: |
+        echo "This is a test file" > testfile.txt
+
+    - name: Upload file to GCS
+      run: |
+        gsutil cp testfile.txt gs://your-bucket-name/
+
+
+
+
+# name: test
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       id-token: write
+#       contents: read
+#     steps:
+#       - name: checkout
+#         uses: actions/checkout@v3
+#       - id: 'auth'
+#         name: 'Authenticate to Google Cloud'
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
+#           service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
+#       - name: 'Set up Cloud SDK'
+#         uses: 'google-github-actions/setup-gcloud@v1'
+#         with:
+#           version: '>= 379.0.0'
+#       - name: 'Upload test file'
+#         run: 'echo "test" > test.txt && gsutil cp test.txt gs://terraform-test-masato-nishioka'
