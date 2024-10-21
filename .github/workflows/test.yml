@@ -1,38 +1,69 @@
-name: Upload text file to GCS
+# name: Upload text file to GCS
 
+# on:
+#   push:
+#     branches:
+#       - main
+
+# permissions:
+#   id-token: write  # IDトークンの発行を許可
+#   contents: read   # リポジトリコンテンツへの読み取り権限
+
+# jobs:
+#   upload-to-gcs:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v3
+
+#     - name: Authenticate to Google Cloud using Workload Identity
+#       uses: google-github-actions/auth@v1
+#       with:
+#         workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+#         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+#         project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+#     - name: Set up Google Cloud SDK
+#       run: |
+        # gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+#         gcloud config set pass_credentials_to_gsutil true
+
+#     - name: Create a text file
+#       run: |
+#         echo "This is a test file" > testfile.txt
+#         ls -la  # ファイルが作成されているか確認
+
+#     - name: Upload file to GCS サービスアカウントのシークレット変更
+#       run: |
+#         gsutil cp testfile.txt gs://terraform-test-masato-nishioka
+
+
+        
+
+name: test
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-
-permissions:
-  id-token: write  # IDトークンの発行を許可
-  contents: read   # リポジトリコンテンツへの読み取り権限
-
 jobs:
-  upload-to-gcs:
+  deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Authenticate to Google Cloud using Workload Identity
-      uses: google-github-actions/auth@v1
-      with:
-        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-    - name: Set up Google Cloud SDK
-      run: |
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-        gcloud config set pass_credentials_to_gsutil true
-
-    - name: Create a text file
-      run: |
-        echo "This is a test file" > testfile.txt
-        ls -la  # ファイルが作成されているか確認
-
-    - name: Upload file to GCS サービスアカウントのシークレット変更
-      run: |
-        gsutil cp testfile.txt gs://terraform-test-masato-nishioka
+      - name: checkout
+        uses: actions/checkout@v3
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
+          service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          version: '>= 379.0.0'
+      - name: 'Upload test file'
+        run: 'echo "test" > test.txt && gsutil cp test.txt gs://terraform-test-masato-nishioka'
