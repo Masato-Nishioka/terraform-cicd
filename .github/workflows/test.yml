@@ -33,6 +33,6 @@ jobs:
         echo "This is a test file" > testfile.txt
         ls -la  # ファイルが作成されているか確認
 
-    - name: Upload file to GCS
+    - name: Upload file to GCS サービスアカウントのシークレット更新した
       run: |
         gsutil cp testfile.txt gs://terraform-test-masato-nishioka
