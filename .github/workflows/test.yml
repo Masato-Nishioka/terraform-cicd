@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  connection-test3:
+  connection-test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -19,6 +19,6 @@ jobs:
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v2'
       with:
-        workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
-        service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
+        workload_identity_provider: 'projects/${{ secrets.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.ID_POOLS_ID }}/providers/${{ secrets.PROVIDER_ID }}'
+        service_account: '${{ secrets.SERVICE_ACCOUNT_MAIL_ADDRESS }}'
         audience: 'https://github.com/Masato-Nishioka'
