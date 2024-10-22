@@ -23,16 +23,5 @@ jobs:
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Set up Google Cloud SDK
-      run: |
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-        gcloud config set pass_credentials_to_gsutil true
-
-    - name: Create a text file
-      run: |
-        echo "This is a test file" > testfile.txt
-        ls -la  # ファイルが作成されているか確認
-
-    - name: Upload file to GCS サービスアカウントのシークレット変更
-      run: |
-        gsutil cp testfile.txt gs://terraform-test-masato-nishioka
+    - name: Test
+      run: gcloud iam service-accounts list
