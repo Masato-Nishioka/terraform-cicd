@@ -1,4 +1,4 @@
-name: Upload text file to GCS
+name: connection test
 
 on:
   push:
@@ -23,5 +23,5 @@ jobs:
         service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
         audience: 'https://github.com/Masato-Nishioka'
 
-    - name: Test4
+    - name: Test5
       run: gcloud iam service-accounts list
