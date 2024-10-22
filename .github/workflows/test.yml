@@ -22,3 +22,10 @@ jobs:
         workload_identity_provider: 'projects/${{ secrets.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.ID_POOLS_ID }}/providers/${{ secrets.PROVIDER_ID }}'
         service_account: '${{ secrets.SERVICE_ACCOUNT_MAIL_ADDRESS }}'
         audience: 'https://github.com/Masato-Nishioka'
+
+
+    - name: Create test.txt file
+      run: echo "This is a test file." > test.txt
+
+    - name: Upload test.txt to Google Cloud Storage
+      run: gsutil cp test.txt gs://terraform-test-masato-nishioka/test.txt
