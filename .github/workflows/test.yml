@@ -6,8 +6,8 @@ on:
       - main
 
 permissions:
-  id-token: write  # IDトークンの発行を許可
-  contents: read   # リポジトリコンテンツへの読み取り権限
+  id-token: write
+  contents: read
 
 jobs:
   upload-to-gcs:
