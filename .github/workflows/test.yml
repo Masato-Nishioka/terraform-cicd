@@ -23,5 +23,5 @@ jobs:
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Test1
+    - name: Test2
       run: gcloud iam service-accounts list
