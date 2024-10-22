@@ -22,6 +22,3 @@ jobs:
         workload_identity_provider: 'projects/840252608903/locations/global/workloadIdentityPools/github-actions/providers/github'
         service_account: 'terraform-ci-cd-service-accoun@terraform-cicd-439001.iam.gserviceaccount.com'
         audience: 'https://github.com/Masato-Nishioka'
-
-    - name: Test5
-      run: gcloud iam service-accounts list
