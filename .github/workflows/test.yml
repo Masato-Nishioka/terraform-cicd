@@ -24,7 +24,7 @@ jobs:
         audience: 'https://github.com/Masato-Nishioka'
 
 
-    - name: Create test.txt file
+    - name: Create test.txt file1
       run: echo "This is a test file." > test.txt
 
     - name: Upload test.txt to Google Cloud Storage
