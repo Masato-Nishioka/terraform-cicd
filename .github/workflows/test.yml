@@ -15,6 +15,25 @@ jobs:
       - name: Check latest commit hash
         run: echo ${{ github.sha }}
 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get changed files
+        id: get_changed_files
+        run: |
+          # 最新の2つのコミットを比較し、変更のあったファイルをリストアップ
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+
+          # 出力をGitHubの出力に設定
+          echo "::set-output name=files::$(cat changed_files.txt)"
+
+      - name: Use changed files
+        run: |
+          echo "Files changed in the last commit:"
+          echo "${{ steps.get_changed_files.outputs.files }}"
+
 
 
 
