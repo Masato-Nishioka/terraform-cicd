@@ -5,27 +5,40 @@ on:
     branches:
       - main
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
-  connection-test:
+  check-commit-hash:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Check last commit hash
+        run: echo ${{ github.event.before }}
 
-    - name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v2'
-      with:
-        workload_identity_provider: 'projects/${{ secrets.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.ID_POOLS_ID }}/providers/${{ secrets.PROVIDER_ID }}'
-        service_account: '${{ secrets.SERVICE_ACCOUNT_MAIL_ADDRESS }}'
-        audience: 'https://github.com/Masato-Nishioka'
+      - name: Check latest commit hash
+        run: echo ${{ github.sha }}
 
 
-    - name: Create test.txt file1
-      run: echo "This is a test file." > test.txt
 
-    - name: Upload test.txt to Google Cloud Storage
-      run: gsutil cp test.txt gs://terraform-test-masato-nishioka/test.txt
+
+# permissions:
+#   id-token: write
+#   contents: read
+
+# jobs:
+#   connection-test:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v4
+
+#     - name: 'Authenticate to Google Cloud'
+#       uses: 'google-github-actions/auth@v2'
+#       with:
+#         workload_identity_provider: 'projects/${{ secrets.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.ID_POOLS_ID }}/providers/${{ secrets.PROVIDER_ID }}'
+#         service_account: '${{ secrets.SERVICE_ACCOUNT_MAIL_ADDRESS }}'
+#         audience: 'https://github.com/Masato-Nishioka'
+
+
+#     - name: Create test.txt file1
+#       run: echo "This is a test file." > test.txt
+
+#     - name: Upload test.txt to Google Cloud Storage
+#       run: gsutil cp test.txt gs://terraform-test-masato-nishioka/test.txt
