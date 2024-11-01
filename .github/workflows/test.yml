@@ -17,6 +17,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Get changed .tf files
         id: get_changed_tf_files
