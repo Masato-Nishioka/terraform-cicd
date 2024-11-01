@@ -24,15 +24,16 @@ jobs:
         id: get_changed_files
         run: |
           # 最新の2つのコミットを比較し、変更のあったファイルをリストアップ
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$' > changed_files.txt
-          echo "Changed files:"
-          cat changed_files.txt
-
-      - name: Use changed files
-        run: |
-          echo "Files changed in the last commit:"
-          echo "${{ steps.get_changed_files.outputs.files }}"
-
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$')
+          if [ -z "$changed_files" ]; then
+            echo "No .tf files changed."
+            echo "changed_files=" >> $GITHUB_ENV
+          else
+            echo "$changed_files" > changed_files.txt
+            echo "Changed files:"
+            cat changed_files.txt
+            echo "changed_files=$changed_files" >> $GITHUB_ENV
+          fi
 
 
 # permissions:
