@@ -20,20 +20,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get changed .tf files
-        id: get_changed_tf_files
+      - name: Get changed files
+        id: get_changed_files
         run: |
-          # 最新の2つのコミットを比較し、.tfファイルの変更をリストアップ
-          CHANGED_TF_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$')
-          echo "Changed .tf files: $CHANGED_TF_FILES"
+          # 最新の2つのコミットを比較し、変更のあったファイルをリストアップ
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$' > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
 
-          # 出力をGitHubの出力に設定
-          echo "::set-output name=files::$CHANGED_TF_FILES"
-
-      - name: Use changed .tf files
+      - name: Use changed files
         run: |
-          echo "Terraform files changed in the last commit:"
-          echo "${{ steps.get_changed_tf_files.outputs.files }}"
+          echo "Files changed in the last commit:"
+          echo "${{ steps.get_changed_files.outputs.files }}"
+
 
 
 # permissions:
