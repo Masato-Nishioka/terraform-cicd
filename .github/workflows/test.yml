@@ -17,15 +17,22 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
-      - name: Get changed files
-        id: get_changed_files
+      - name: Get changed .tf files
+        id: get_changed_tf_files
         run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
-          echo "変更のあったファイルのリスト:"
-          cat changed_files.txt
+          # 最新の2つのコミットを比較し、.tfファイルの変更をリストアップ
+          CHANGED_TF_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$')
+          echo "Changed .tf files: $CHANGED_TF_FILES"
+
+          # 出力をGitHubの出力に設定
+          echo "::set-output name=files::$CHANGED_TF_FILES"
+
+      - name: Use changed .tf files
+        run: |
+          echo "Terraform files changed in the last commit:"
+          echo "${{ steps.get_changed_tf_files.outputs.files }}"
+
 
 # permissions:
 #   id-token: write
