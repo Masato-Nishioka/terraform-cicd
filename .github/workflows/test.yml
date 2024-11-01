@@ -28,17 +28,6 @@ jobs:
           echo "Changed files:"
           cat changed_files.txt
 
-          # 出力をGitHubの出力に設定
-          echo "::set-output name=files::$(cat changed_files.txt)"
-
-      - name: Use changed files
-        run: |
-          echo "Files changed in the last commit:"
-          echo "${{ steps.get_changed_files.outputs.files }}"
-
-
-
-
 # permissions:
 #   id-token: write
 #   contents: read
