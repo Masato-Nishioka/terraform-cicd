@@ -34,7 +34,7 @@ jobs:
 
       - name: Comment on pull request
         run: |
-          COMMENT_BODY="### Changed Files\n\`\`\`\n$CHANGED_FILES\n\`\`\`"
+          COMMENT_BODY="$CHANGED_FILES"
           gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
