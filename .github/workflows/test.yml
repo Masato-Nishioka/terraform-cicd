@@ -2,10 +2,10 @@ name: CI test
 
 on:
   pull_request:
-    branches:
-      - 'develop'
-      - '**/develop'
-      - 'develop/**'
+    # branches:
+    #   - 'develop'
+    #   - '**/develop'
+    #   - 'develop/**'
     types:
       - opened
       - reopened
