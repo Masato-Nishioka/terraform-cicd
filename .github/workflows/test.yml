@@ -2,10 +2,6 @@ name: CI test
 
 on:
   pull_request:
-    # branches:
-    #   - 'develop'
-    #   - '**/develop'
-    #   - 'develop/**'
     types:
       - opened
       - reopened
@@ -30,6 +26,7 @@ jobs:
       - name: Find all changed files
         id: files-changed
         run: |
+          git fetch --prune --unshallow
           CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}")
           CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')
           echo "Changed files: $CHANGED_FILES"
