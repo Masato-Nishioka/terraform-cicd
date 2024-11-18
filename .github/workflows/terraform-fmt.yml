@@ -1,0 +1,52 @@
+name: Terraform FMT and PR Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  terraform-fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.6 # 必要に応じてバージョンを指定
+
+      - name: Find changed files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.pull_request.head.sha }} | grep '\.tf$' || true)
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No .tf files changed"
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
+          else
+            echo "$CHANGED_FILES" > changed_files.txt
+            echo "NO_CHANGES=false" >> $GITHUB_ENV
+          fi
+
+      - name: Terraform FMT
+        if: env.NO_CHANGES == 'false'
+        run: |
+          while IFS= read -r FILE; do
+            terraform fmt -diff "$FILE" >> fmt_output.txt || true
+          done < changed_files.txt
+        env:
+          TF_IN_AUTOMATION: true
+
+      - name: Post comment to PR
+        if: env.NO_CHANGES == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f fmt_output.txt ]; then
+            gh pr comment ${{ github.event.pull_request.number }} -F fmt_output.txt
+          else
+            echo "No changes detected by terraform fmt"
+          fi
