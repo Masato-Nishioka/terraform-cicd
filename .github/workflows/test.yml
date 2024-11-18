@@ -1,62 +1,44 @@
-name: connection test
+name: CI test
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
+      - 'develop'
+      - '**/develop'
+      - 'develop/**'
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
-  check-commit-hash:
+  terraform-ci:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
     steps:
-      - name: Check last commit hash
-        run: echo ${{ github.event.before }}
-
-      - name: Check latest commit hash
-        run: echo ${{ github.sha }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
 
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v4
 
-      - name: Get changed files
-        id: get_changed_files
+      - name: Find all changed files
+        id: files-changed
         run: |
-          # 最新の2つのコミットを比較し、変更のあったファイルをリストアップ
-          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tf$')
-          if [ -z "$changed_files" ]; then
-            echo "No .tf files changed."
-            echo "changed_files=" >> $GITHUB_ENV
-          else
-            echo "$changed_files" > changed_files.txt
-            echo "Changed files:"
-            cat changed_files.txt
-            echo "changed_files=$changed_files" >> $GITHUB_ENV
-          fi
+          CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}")
+          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
 
-
-# permissions:
-#   id-token: write
-#   contents: read
-
-# jobs:
-#   connection-test:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
-
-#     - name: 'Authenticate to Google Cloud'
-#       uses: 'google-github-actions/auth@v2'
-#       with:
-#         workload_identity_provider: 'projects/${{ secrets.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.ID_POOLS_ID }}/providers/${{ secrets.PROVIDER_ID }}'
-#         service_account: '${{ secrets.SERVICE_ACCOUNT_MAIL_ADDRESS }}'
-#         audience: 'https://github.com/Masato-Nishioka'
-
-
-#     - name: Create test.txt file1
-#       run: echo "This is a test file." > test.txt
-
-#     - name: Upload test.txt to Google Cloud Storage
-#       run: gsutil cp test.txt gs://terraform-test-masato-nishioka/test.txt
+      - name: Comment on pull request
+        run: |
+          COMMENT_BODY="### Changed Files\n\`\`\`\n$CHANGED_FILES\n\`\`\`"
+          gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGED_FILES: ${{ env.changed_files }}
