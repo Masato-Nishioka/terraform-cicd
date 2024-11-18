@@ -28,7 +28,7 @@ jobs:
         run: |
           git fetch --prune --unshallow
           CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}")
-          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ', ')
+          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ', ' | sed 's/, $//')
           echo "Changed files: $CHANGED_FILES"
           echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
 
@@ -39,4 +39,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGED_FILES: ${{ env.changed_files }}
-
