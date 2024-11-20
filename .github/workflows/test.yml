@@ -22,14 +22,22 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 過去の全コミットを取得
+
+      - name: Find branch base commit
+        id: find-base
+        run: |
+          # feature/testとmainの共通の祖先コミットを取得
+          BASE_COMMIT=$(git merge-base origin/${{ github.event.repository.default_branch }} ${{ github.event.pull_request.head.sha }})
+          echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
 
       - name: Find all changed files
         id: files-changed
         run: |
-          git fetch --prune --unshallow
-          # ファイル名を取得して全体をコードブロックで囲む
+          # BASE_COMMITを基準に差分を取得
           echo '```' > changed_files.txt
-          git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}" >> changed_files.txt
+          git diff --name-only ${{ env.BASE_COMMIT }} >> changed_files.txt
           echo '```' >> changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
