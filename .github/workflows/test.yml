@@ -27,17 +27,16 @@ jobs:
         id: files-changed
         run: |
           git fetch --prune --unshallow
-          # ファイル名を取得して一時ファイルに保存
-          git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}" > changed_files.txt
-          echo "Changed files:"
+          # コードブロック付きで変更されたファイル一覧を生成
+          echo "```" > changed_files.txt
+          git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}" >> changed_files.txt
+          echo "```" >> changed_files.txt
+          echo "Changed files with code block:"
           cat changed_files.txt
 
       - name: Comment on pull request
         run: |
-          # 変更されたファイル一覧を読み取り、全体をコードブロックで囲む
-          CHANGED_FILES=$(cat changed_files.txt | tr '\n' '\n')
-          COMMENT_BODY="```\n$CHANGED_FILES\n```"
-          echo "$COMMENT_BODY"
+          COMMENT_BODY=$(cat changed_files.txt)
           gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
