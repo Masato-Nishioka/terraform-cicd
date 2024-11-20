@@ -27,7 +27,9 @@ jobs:
         id: files-changed
         run: |
           git fetch --prune --unshallow
-          git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}" > changed_files.txt
+          # ファイル名を取得して整形
+          git diff --name-only "${{ github.event.before }}" "${{ github.event.pull_request.head.sha }}" \
+            | sed 's/^/### /; s/$/ ###/' > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
 
