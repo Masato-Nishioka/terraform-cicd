@@ -18,4 +18,3 @@ resource "google_storage_bucket" "test_bucket" {
   name     = "terraform-cicd-test-bucket"
   location = "asia-northeast1"
 }
-#test
