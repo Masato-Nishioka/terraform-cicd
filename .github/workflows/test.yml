@@ -29,7 +29,7 @@ jobs:
         id: find-base
         run: |
           # feature/testとmainの共通の祖先コミットを取得
-          BASE_COMMIT=$(git merge-base origin/main $GITHUB_SHA)
+          BASE_COMMIT=$(git merge-base origin/main ${{ github.event.pull_request.head.sha }})
           echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
 
       - name: Find all changed files

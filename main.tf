@@ -19,4 +19,3 @@ resource "google_storage_bucket" "test_bucket" {
   location = "asia-northeast1"
 }
 #test
-#test
