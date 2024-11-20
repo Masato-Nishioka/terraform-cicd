@@ -1,0 +1,46 @@
+name: trigger test
+
+on:
+  push:
+    branches:
+      - "feature"
+      - "**/feature**"
+      - "feature/**"
+
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 過去の全コミットを取得
+
+      - name: Check if a pull request exists
+        id: check-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_COUNT=$(gh pr list --head "${{ github.ref_name }}" --json number --jq '. | length')
+          echo "pr_count=$PR_COUNT" >> $GITHUB_ENV
+
+      - name: Echo message if no pull request
+        if: env.pr_count == '0'
+        run: echo "プルリクが作成されていなければこのコメントが表示されます"
+
+      - name: Comment on pull request if exists
+        if: env.pr_count != '0'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(gh pr list --head "${{ github.ref_name }}" --json number --jq '.[0].number')
+          gh pr comment "$PR_NUMBER" --body "プルリクが作成されているとこのコメントが追加されます"
