@@ -19,9 +19,12 @@ jobs:
           BASE_BRANCH=${{ github.event.pull_request.base.ref }}
           HEAD_BRANCH=${{ github.event.pull_request.head.ref }}
           
-          # リモートベースブランチをフェッチ
+          # リモートベースブランチとヘッドブランチをフェッチ
           git fetch origin $BASE_BRANCH
           git fetch origin $HEAD_BRANCH
+
+          # リモートブランチが正しくフェッチされているか確認
+          git branch -r
 
           # 差分を表示（BASE_BRANCHとHEAD_BRANCHの差分）
           echo "Changes between base branch ($BASE_BRANCH) and head branch ($HEAD_BRANCH):"
