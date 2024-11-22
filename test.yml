@@ -1,10 +1,8 @@
-name: Detect Changes
+name: PR Synchronize Diff Checker
 
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
+    types: [synchronize]
 
 jobs:
   detect-changes:
@@ -13,29 +11,18 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # 履歴全体をフェッチする必要がある
+          fetch-depth: 0 # 履歴全体をフェッチ
 
-      - name: Get merge base
-        id: merge-base
+      - name: Get changes between base and head branches
         run: |
-          # デフォルトブランチを取得
-          DEFAULT_BRANCH=${{ github.event.repository.default_branch }}
+          # プルリクエストのベースブランチとヘッドブランチを取得
+          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+          HEAD_BRANCH=${{ github.event.pull_request.head.ref }}
           
-          # リモートデフォルトブランチをフェッチ
-          git fetch origin $DEFAULT_BRANCH
+          # リモートベースブランチをフェッチ
+          git fetch origin $BASE_BRANCH
+          git fetch origin $HEAD_BRANCH
 
-          # merge-baseを取得
-          MERGE_BASE=$(git merge-base HEAD origin/$DEFAULT_BRANCH)
-          echo "merge-base: $MERGE_BASE"
-
-          # 共通祖先をGitHub Actionsの出力として保存
-          echo "merge_base=$MERGE_BASE" >> $GITHUB_ENV
-
-      - name: Show changes
-        run: |
-          echo "Changes since merge-base:"
-          git diff $merge_base HEAD --stat
-
-# MERGE_BASE=$(git merge-base HEAD ${{ github.event.repository.default_branch }})
-# echo "merge_base=$MERGE_BASE" >> $GITHUB_ENV
-# git diff $merge_base HEAD --stat
+          # 差分を表示（BASE_BRANCHとHEAD_BRANCHの差分）
+          echo "Changes between base branch ($BASE_BRANCH) and head branch ($HEAD_BRANCH):"
+          git diff origin/$BASE_BRANCH...origin/$HEAD_BRANCH --stat
