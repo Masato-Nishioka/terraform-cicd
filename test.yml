@@ -1,0 +1,37 @@
+name: Detect Changes
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # 履歴全体をフェッチする必要がある
+
+      - name: Get merge base
+        id: merge-base
+        run: |
+          # デフォルトブランチを取得
+          DEFAULT_BRANCH=${{ github.event.repository.default_branch }}
+          
+          # リモートデフォルトブランチをフェッチ
+          git fetch origin $DEFAULT_BRANCH
+
+          # merge-baseを取得
+          MERGE_BASE=$(git merge-base HEAD origin/$DEFAULT_BRANCH)
+          echo "merge-base: $MERGE_BASE"
+
+          # 共通祖先をGitHub Actionsの出力として保存
+          echo "merge_base=$MERGE_BASE" >> $GITHUB_ENV
+
+      - name: Show changes
+        run: |
+          echo "Changes since merge-base:"
+          git diff $merge_base HEAD --stat
