@@ -31,13 +31,19 @@ jobs:
         #   mv /tmp/tfcmt /usr/local/bin
         #   tfcmt --version
 
+        # run: |
+        #   mkdir -p ${HOME}/bin
+        #   curl -L "https://github.com/suzuki-shunsuke/tfcmt/releases/download/v4.0.0/tfcmt_linux_amd64.tar.gz" -o /tmp/tfcmt.tar.gz
+        #   tar xzf /tmp/tfcmt.tar.gz -C /tmp
+        #   mv /tmp/tfcmt ${HOME}/bin
+        #   echo "${HOME}/bin" >> $GITHUB_PATH
+        #   tfcmt --version
+
         run: |
-          mkdir -p ${HOME}/bin
-          curl -L "https://github.com/suzuki-shunsuke/tfcmt/releases/download/v4.0.0/tfcmt_linux_amd64.tar.gz" -o /tmp/tfcmt.tar.gz
-          tar xzf /tmp/tfcmt.tar.gz -C /tmp
-          mv /tmp/tfcmt ${HOME}/bin
-          echo "${HOME}/bin" >> $GITHUB_PATH
-          tfcmt --version
+          mkdir -p ~/bin
+          curl -sSL https://github.com/suzuki-shunsuke/tfcmt/releases/download/v4.3.0/tfcmt_linux_amd64.tar.gz | tar -xz -C ~/bin
+        env:
+          PATH: $HOME/bin:$PATH
 
 
       - name: Assume Role
