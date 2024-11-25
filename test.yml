@@ -1,8 +1,7 @@
-name: PR Synchronize Diff Checker
+name: Fetch Organization Repositories
 
 on:
-  pull_request:
-    types: [synchronize]
+  workflow_dispatch:
 
 jobs:
   fetch_repos:
@@ -10,17 +9,9 @@ jobs:
     steps:
       - name: Fetch all repositories
         run: |
-          PAGE=1
-          while true; do
-            RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.MODULE_GITHUB_TOKEN }}" \
-                          -H "Accept: application/vnd.github.v3+json" \
-                          "https://api.github.com/orgs/{your-organization}/repos?per_page=100&page=$PAGE")
-            if [ "$(echo "$RESPONSE" | jq -r '. | length')" -eq 0 ]; then
-              break
-            fi
-            echo "$RESPONSE" | jq -r '.[].full_name' >> repos.txt
-            PAGE=$((PAGE + 1))
-          done
+          curl -s -H "Authorization: token ${{ secrets.MODULE_GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "https://api.github.com/orgs/{your-organization}/repos?per_page=30" \
+               | jq -r '.[].full_name' > repos.txt
           echo "Fetched repositories:"
           cat repos.txt
-
