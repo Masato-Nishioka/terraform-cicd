@@ -1,39 +1,17 @@
-name: Checkout All Organization Repositories
+name: Fetch Organization Repositories
 
 on:
   workflow_dispatch:
 
 jobs:
-  fetch_and_checkout:
+  fetch_repos:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Fetch repository list from the organization
-      - name: Fetch repositories
-        id: fetch_repos
+      - name: Fetch all repositories
         run: |
           curl -s -H "Authorization: token ${{ secrets.MODULE_GITHUB_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                "https://api.github.com/orgs/{your-organization}/repos?per_page=30" \
-               | jq -r '.[].full_name' | jq -R -s -c 'split("\n") | map(select(. != ""))' \
-               > repos.json
-          echo "::set-output name=repos::$(cat repos.json)"
-
-    outputs:
-      repos: ${{ steps.fetch_repos.outputs.repos }}
-
-  checkout_repos:
-    needs: fetch_and_checkout
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        repo: ${{ fromJSON(needs.fetch_and_checkout.outputs.repos) }}
-
-    steps:
-      # Step 2: Checkout each repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ matrix.repo }}
-          token: ${{ secrets.MODULE_GITHUB_TOKEN }}
-          path: ${{ matrix.repo }}
+               | jq -r '.[].full_name' > repos.txt
+          echo "Fetched repositories:"
+          cat repos.txt
