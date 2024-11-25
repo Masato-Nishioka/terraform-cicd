@@ -15,3 +15,16 @@ jobs:
                | jq -r '.[].full_name' > repos.txt
           echo "Fetched repositories:"
           cat repos.txt
+
+      - name: Checkout repositories
+        run: |
+          while IFS= read -r repo; do
+            echo "Checking out $repo"
+            git clone "https://github.com/$repo.git"
+            # Optionally, you can use actions/checkout here instead of git clone
+            # with a specified repository
+            # - name: Checkout $repo
+            #   uses: actions/checkout@v4
+            #   with:
+            #     repository: $repo
+          done < repos.txt
