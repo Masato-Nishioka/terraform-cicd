@@ -5,27 +5,22 @@ on:
     types: [synchronize]
 
 jobs:
-  detect-changes:
+  fetch_repos:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # 履歴全体をフェッチ
-
-      - name: Get changes between base and head branches
+      - name: Fetch all repositories
         run: |
-          # プルリクエストのベースブランチとヘッドブランチを取得
-          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
-          HEAD_BRANCH=${{ github.event.pull_request.head.ref }}
-          
-          # リモートベースブランチとヘッドブランチをフェッチ
-          git fetch origin $BASE_BRANCH
-          git fetch origin $HEAD_BRANCH
+          PAGE=1
+          while true; do
+            RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.MODULE_GITHUB_TOKEN }}" \
+                          -H "Accept: application/vnd.github.v3+json" \
+                          "https://api.github.com/orgs/{your-organization}/repos?per_page=100&page=$PAGE")
+            if [ "$(echo "$RESPONSE" | jq -r '. | length')" -eq 0 ]; then
+              break
+            fi
+            echo "$RESPONSE" | jq -r '.[].full_name' >> repos.txt
+            PAGE=$((PAGE + 1))
+          done
+          echo "Fetched repositories:"
+          cat repos.txt
 
-          # リモートブランチが正しくフェッチされているか確認
-          git branch -r
-
-          # 差分を表示（BASE_BRANCHとHEAD_BRANCHの差分）
-          echo "Changes between base branch ($BASE_BRANCH) and head branch ($HEAD_BRANCH):"
-          git diff origin/$BASE_BRANCH...origin/$HEAD_BRANCH --stat
