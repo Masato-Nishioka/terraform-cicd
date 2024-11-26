@@ -15,15 +15,15 @@ jobs:
           REPOS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                         -H "Accept: application/vnd.github.v3+json" \
                         "https://api.github.com/orgs/{your-organization}/repos?per_page=30" \
-                        | jq -r '.[].full_name')
+                        | jq -r '.[].full_name' | tr '\n' ' ')
           echo "Fetched repositories:"
           echo "$REPOS"
-          echo "REPOS=$REPOS" >> $GITHUB_ENV
+          echo "REPOS=\"$REPOS\"" >> $GITHUB_ENV
 
       - name: Checkout repositories
         run: |
           echo "Cloning repositories..."
-          for repo in ${REPOS//,/ }; do
+          for repo in $REPOS; do
             echo "Cloning $repo"
             git clone "https://github.com/$repo.git"
           done
