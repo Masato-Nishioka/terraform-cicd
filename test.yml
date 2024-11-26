@@ -8,23 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch all repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.MODULE_GITHUB_TOKEN }}
         run: |
-          curl -s -H "Authorization: token ${{ secrets.MODULE_GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               "https://api.github.com/orgs/{your-organization}/repos?per_page=30" \
-               | jq -r '.[].full_name' > repos.txt
+          echo "Fetching repositories for organization..."
+          REPOS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        "https://api.github.com/orgs/{your-organization}/repos?per_page=30" \
+                        | jq -r '.[].full_name')
           echo "Fetched repositories:"
-          cat repos.txt
+          echo "$REPOS"
+          echo "REPOS=$REPOS" >> $GITHUB_ENV
 
       - name: Checkout repositories
         run: |
-          while IFS= read -r repo; do
-            echo "Checking out $repo"
+          echo "Cloning repositories..."
+          for repo in ${REPOS//,/ }; do
+            echo "Cloning $repo"
             git clone "https://github.com/$repo.git"
-            # Optionally, you can use actions/checkout here instead of git clone
-            # with a specified repository
-            # - name: Checkout $repo
-            #   uses: actions/checkout@v4
-            #   with:
-            #     repository: $repo
-          done < repos.txt
+          done
