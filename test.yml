@@ -27,3 +27,40 @@ jobs:
             echo "Cloning $repo"
             git clone "https://github.com/$repo.git"
           done
+
+
+      - name: install terraform to temporary diretory
+        run: |
+          IERRA_VERSION="1.9.0"
+          INSTALL_DIR="$GITHUB_WORKSPACE/terraform-bin"
+          echo "terraform version: ${TERRA_VERSION}"
+          echo "install directory: ${INSTALL_DIR}"
+          mkdir -p "${INSTALL_DIR}"
+          curl -L -o terraform.zip "https://releases.hashicorp.com/terraform/${TERRA_VERSION}/terraform_${TERRA_VERSION_linux_amd64.zip"
+          unzip terraform.zip
+          echo "Terraform installed to ${INSTALL_DIR}"
+
+      - name: Add terraform to PATH
+        run: echo "$GITHUB_WORKSPACE/terraform-bin" >> "$GITHUB_PATH"
+
+      - name: verify terraform version
+        run: terraform version
+
+
+      - name: Install Terraform to temporary directory
+        run: |
+          TERRA_VERSION="1.9.0"
+          INSTALL_DIR="$GITHUB_WORKSPACE/terraform-bin"
+          echo "Terraform version: ${TERRA_VERSION}"
+          echo "Install directory: ${INSTALL_DIR}"
+          mkdir -p "${INSTALL_DIR}"
+          curl -L -o terraform.zip "https://releases.hashicorp.com/terraform/${TERRA_VERSION}/terraform_${TERRA_VERSION}_linux_amd64.zip"
+          unzip terraform.zip -d "${INSTALL_DIR}"
+          chmod +x "${INSTALL_DIR}/terraform"
+          echo "Terraform installed to ${INSTALL_DIR}"
+      
+      - name: Add Terraform to PATH
+        run: echo "$GITHUB_WORKSPACE/terraform-bin" >> "$GITHUB_PATH"
+
+      - name: Verify Terraform version
+        run: terraform version
