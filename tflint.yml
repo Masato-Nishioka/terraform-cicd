@@ -1,0 +1,32 @@
+name: Run TFLint on Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  tflint:
+    name: Run TFLint
+    runs-on: self-hosted
+
+    steps:
+      # GitHubリポジトリのコードをクローン
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # TFLintのダウンロードとインストール
+      - name: Download and install TFLint
+        run: |
+          # 最新バージョンのTFLintをダウンロード
+          curl -L -o tflint.zip https://github.com/terraform-linters/tflint/releases/latest/download/tflint_linux_amd64.zip
+          # ZIPを解凍
+          unzip tflint.zip -d /usr/local/bin/
+          # バージョン確認
+          tflint --version
+
+      # TFLintを実行
+      - name: Run TFLint
+        run: |
+          tflint
